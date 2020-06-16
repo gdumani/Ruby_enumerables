@@ -51,6 +51,15 @@ def my_map
   return res
 end
 
+def my_inject
+  return enum_for(__callee__) unless block_given?
+  c=0
+  self.my_each {|i| c=yield(c,i)}
+  return c
+end
+
+
+
 public :my_each
 public :my_each_with_index
 public :my_select
@@ -59,9 +68,12 @@ public :my_any
 public :my_none
 public :my_count
 public :my_map
+public :my_inject
 
 
-puts ars.my_map {|s| s.upcase}
+puts ari.my_inject {|sum, number| sum + number}
+
+#puts ars.my_map {|s| s.upcase}
 
 # puts ari.my_count {|e| e > 20}
 
