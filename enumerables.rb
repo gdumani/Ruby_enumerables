@@ -51,12 +51,11 @@ def my_map
   return res
 end
 
-def my_inject(c=0, operator=0 )
+def my_inject(c=0)
   return enum_for(__callee__) unless block_given?
   self.my_each {|i| c=yield(c,i)}
   return c
 end
-
 
 
 public :my_each
@@ -69,9 +68,20 @@ public :my_count
 public :my_map
 public :my_inject
 
+
+##array = [['A', 'a'], ['B', 'b'], ['C', 'c']]
+##hash = array.my_inject({}) do |memo, values|
+#  memo[values.first] = values.last
+#  memo
+#end
+
+#puts hash
 #[3, 6, 10, 13].inject(0, :+) => 32
 
-puts ari.my_inject {|sum, number| sum + number}
+#puts ari.inject(:-)
+
+
+#puts ari.my_inject {|sum, number| sum + number}
 
 #puts ars.my_map {|s| s.upcase}
 
