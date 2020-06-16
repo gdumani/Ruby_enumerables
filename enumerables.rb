@@ -44,6 +44,12 @@ def my_count
   return c
 end
 
+def my_map
+  return enum_for(__callee__) unless block_given?
+  res=[]
+  self.my_each {|i| res << yield(i)}
+  return res
+end
 
 public :my_each
 public :my_each_with_index
@@ -52,8 +58,12 @@ public :my_all
 public :my_any
 public :my_none
 public :my_count
+public :my_map
 
-puts ari.my_count {|e| e > 20}
+
+puts ars.my_map {|s| s.upcase}
+
+# puts ari.my_count {|e| e > 20}
 
 #puts "60"
 #puts ari.my_none {|e| e == 60}
