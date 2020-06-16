@@ -14,14 +14,7 @@ end
 
 def my_select
   res=[]
-
-  self.my_each do |i|
-
-    if yield(i)
-     res << i
-    end
-  end
-
+  self.my_each {|i| res << i if yield(i)}
   return res
 end
 
