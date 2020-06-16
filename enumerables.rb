@@ -51,9 +51,8 @@ def my_map
   return res
 end
 
-def my_inject
+def my_inject(c=0, operator=0 )
   return enum_for(__callee__) unless block_given?
-  c=0
   self.my_each {|i| c=yield(c,i)}
   return c
 end
@@ -70,6 +69,7 @@ public :my_count
 public :my_map
 public :my_inject
 
+#[3, 6, 10, 13].inject(0, :+) => 32
 
 puts ari.my_inject {|sum, number| sum + number}
 
