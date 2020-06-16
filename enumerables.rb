@@ -37,17 +37,25 @@ def my_none
   return true
 end
 
+def my_count
+  return enum_for(__callee__) unless block_given?
+  c=0
+  self.my_each {|i| c+=1 if yield(i)}
+  return c
+end
+
+
 public :my_each
 public :my_each_with_index
 public :my_select
 public :my_all
 public :my_any
 public :my_none
+public :my_count
 
+puts ari.my_count {|e| e > 20}
 
-
-puts "60"
-puts ari.my_none {|e| e == 60}
-puts ">60"
-puts ari.my_none {|e| e > 60}
-
+#puts "60"
+#puts ari.my_none {|e| e == 60}
+#puts ">60"
+#puts ari.my_none {|e| e > 60}
