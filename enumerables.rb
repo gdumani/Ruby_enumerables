@@ -12,3 +12,17 @@ def my_each_with_index
   length.times {|i| yield(to_a[i], i)}
 end
 
+def my_select
+  res=[]
+  self.my_each {|i| res << i if yield(i)}
+  return res
+end
+
+public :my_each
+public :my_each_with_index
+public :my_select
+
+
+
+
+puts ari.my_select {|element| element > 20}
