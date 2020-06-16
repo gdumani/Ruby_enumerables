@@ -31,17 +31,23 @@ def my_any
   return false
 end
 
-
+def my_none
+  return enum_for(__callee__) unless block_given?
+  self.my_each {|i| return false  if yield(i)}
+  return true
+end
 
 public :my_each
 public :my_each_with_index
 public :my_select
 public :my_all
 public :my_any
+public :my_none
 
 
 
-puts "<60"
-puts ari.my_any {|e| e < 60}
+puts "60"
+puts ari.my_none {|e| e == 60}
 puts ">60"
-puts ari.my_any {|e| e > 60}
+puts ari.my_none {|e| e > 60}
+
