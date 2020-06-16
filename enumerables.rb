@@ -21,18 +21,27 @@ end
 
 def my_all
   return enum_for(__callee__) unless block_given?
-  self.my_each {|i| return false  if !yield(i)} 
+  self.my_each {|i| return false  if !yield(i)}
   return true
 end
-  
+
+def my_any
+  return enum_for(__callee__) unless block_given?
+  self.my_each {|i| return true  if yield(i)}
+  return false
+end
+
+
 
 public :my_each
 public :my_each_with_index
 public :my_select
 public :my_all
+public :my_any
 
 
 
-
-puts ari.my_all {|e| e < 60}
-puts ari.my_all {|e| e > 60}
+puts "<60"
+puts ari.my_any {|e| e < 60}
+puts ">60"
+puts ari.my_any {|e| e > 60}
