@@ -44,10 +44,13 @@ def my_count
   return c
 end
 
-def my_map
-  return enum_for(__callee__) unless block_given?
-  res=[]
-  self.my_each {|i| res << yield(i)}
+def my_map (&op)
+    res=[]
+  if block_given?  
+    self.my_each {|i| res << yield(i)}
+  else
+    self.my_each {|i| res << op.call(i)}
+  end
   return res
 end
 
@@ -82,7 +85,10 @@ public :my_map
 public :my_inject
 public :multiply_els
 
-
+puts "op:"
+puts ars.my_map(&:upcase)
+puts "block:"
+puts ars.my_map {|s| s.upcase}
 ##array = [['A', 'a'], ['B', 'b'], ['C', 'c']]
 ##hash = array.my_inject({}) do |memo, values|
 #  memo[values.first] = values.last
@@ -90,7 +96,7 @@ public :multiply_els
 #end
 
 #puts hash
-puts ari.multiply_els
+# puts ari.multiply_els
 
 #puts ari.inject(:-)
 
