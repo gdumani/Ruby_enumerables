@@ -1,101 +1,92 @@
-def my_each
-  return enum_for(__callee__) unless block_given?
+module Enumerable
+  def my_each
+    return enum_for(__callee__) unless block_given?
 
-  size.times { |i| yield to_a[i] }
-end
-
-def my_each_with_index
-  return enum_for(__callee__) unless block_given?
-
-  length.times { |i| yield(to_a[i], i) }
-end
-
-def my_select
-  return enum_for(__callee__) unless block_given?
-
-  res = []
-  my_each { |i| res << i if yield(i) }
-  res
-end
-
-def my_all
-  return enum_for(__callee__) unless block_given?
-
-  my_each { |i| return false unless yield(i) }
-  true
-end
-
-def my_any
-  return enum_for(__callee__) unless block_given?
-
-  my_each { |i| return true if yield(i) }
-  false
-end
-
-def my_none
-  return enum_for(__callee__) unless block_given?
-
-  my_each { |i| return false if yield(i) }
-  true
-end
-
-def my_count
-  return enum_for(__callee__) unless block_given?
-
-  c = 0
-  my_each { |i| c += 1 if yield(i) }
-  c
-end
-
-def my_map(&oper)
-  res = []
-  if block_given?
-    my_each { |i| res << yield(i) }
-  else
-    my_each { |i| res << oper.call(i) }
+    size.times { |i| yield to_a[i] }
   end
-  res
-end
 
-# rubocop: disable Metrics/PerceivedComplexity
-def my_inject(acumulator = nil, operator = nil)
-  if block_given?
-    if acumulator.nil?
-      acumulator = to_a[0]
-      (1...length).my_each { |i| acumulator = yield(acumulator, to_a[i]) }
-    else
-      my_each { |i| acumulator = yield(acumulator, i) }
-    end
-  else
-    if operator.nil?
-      operator = acumulator
-      acumulator = nil
-    end
-    if acumulator.nil?
-      acumulator = to_a[0]
-      (1...length).my_each { |i| acumulator = acumulator.method(operator).call(to_a[i]) }
-    else
-      my_each { |i| acumulator = acumulator.method(operator).call(i) }
-    end
+  def my_each_with_index
+    return enum_for(__callee__) unless block_given?
+
+    length.times { |i| yield(to_a[i], i) }
   end
-  acumulator
-end
-# rubocop: enable Metrics/PerceivedComplexity
 
-def multiply_els
-  my_inject(:*)
-end
+  def my_select
+    return enum_for(__callee__) unless block_given?
 
-public :my_each
-public :my_each_with_index
-public :my_select
-public :my_all
-public :my_any
-public :my_none
-public :my_count
-public :my_map
-public :my_inject
-public :multiply_els
+    res = []
+    my_each { |i| res << i if yield(i) }
+    res
+  end
+
+  def my_all
+    return enum_for(__callee__) unless block_given?
+
+    my_each { |i| return false unless yield(i) }
+    true
+  end
+
+  def my_any
+    return enum_for(__callee__) unless block_given?
+
+    my_each { |i| return true if yield(i) }
+    false
+  end
+
+  def my_none
+    return enum_for(__callee__) unless block_given?
+
+    my_each { |i| return false if yield(i) }
+    true
+  end
+
+  def my_count
+    return enum_for(__callee__) unless block_given?
+
+    c = 0
+    my_each { |i| c += 1 if yield(i) }
+    c
+  end
+
+  def my_map(&oper)
+    res = []
+    if block_given?
+      my_each { |i| res << yield(i) }
+    else
+      my_each { |i| res << oper.call(i) }
+    end
+    res
+  end
+
+  # rubocop: disable Metrics/PerceivedComplexity
+  def my_inject(acumulator = nil, operator = nil)
+    if block_given?
+      if acumulator.nil?
+        acumulator = to_a[0]
+        (1...length).my_each { |i| acumulator = yield(acumulator, to_a[i]) }
+      else
+        my_each { |i| acumulator = yield(acumulator, i) }
+      end
+    else
+      if operator.nil?
+        operator = acumulator
+        acumulator = nil
+      end
+      if acumulator.nil?
+        acumulator = to_a[0]
+        (1...length).my_each { |i| acumulator = acumulator.method(operator).call(to_a[i]) }
+      else
+        my_each { |i| acumulator = acumulator.method(operator).call(i) }
+      end
+    end
+    acumulator
+  end
+  # rubocop: enable Metrics/PerceivedComplexity
+
+  def multiply_els
+    my_inject(:*)
+  end
+end
 
 # #------test data-------
 # ars = %w[ab cd ef ij kx]
