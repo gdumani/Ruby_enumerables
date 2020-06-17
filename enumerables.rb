@@ -52,26 +52,24 @@ def my_map
 end
 
 def my_inject(c=nil, op=nil)
-  if op.nil?
-    op=c
-    if op==:+||op==:-
-      c=0
-    else
-      c=1
-    end
-  end
-
   if block_given?
-    puts "block"
+    # puts "block"
     self.my_each {|i| c=yield(c,i)}
     return c
   else
-    puts "noblock"
-   self.my_each { |i| c = c.method(op).call(i) }
-   return c
+    # puts "noblock"
+    if op.nil?
+      op=c
+      op==:+||op==:- ? c=0 : c=1
+    end
+    self.my_each { |i| c = c.method(op).call(i) }
+    return c
   end
 end
 
+def multiply_els
+  self.my_inject(:*)
+end
 
 public :my_each
 public :my_each_with_index
@@ -82,6 +80,7 @@ public :my_none
 public :my_count
 public :my_map
 public :my_inject
+public :multiply_els
 
 
 ##array = [['A', 'a'], ['B', 'b'], ['C', 'c']]
@@ -91,7 +90,7 @@ public :my_inject
 #end
 
 #puts hash
-puts ari.my_inject(:+)
+puts ari.multiply_els
 
 #puts ari.inject(:-)
 
