@@ -53,18 +53,22 @@ end
 
 def my_inject(c=nil, op=nil)
   if block_given?
-    # puts "block"
-    self.my_each {|i| c=yield(c,i)}
-    return c
-  else
-    # puts "noblock"
-    if op.nil?
-      op=c
-      op==:+||op==:- ? c=0 : c=1
+    if c.nil?
+      c=to_a[0]
+      (1...self.length).my_each {|i| c=yield(c,self.to_a[i])}    
+    else
+      self.my_each {|i| c=yield(c,i)}
     end
-    self.my_each { |i| c = c.method(op).call(i) }
-    return c
+  else
+    op, c = c, nil if op.nil?
+    if c.nil?
+      c=to_a[0]
+      (1...self.length).my_each { |i| c = c.method(op).call(self.to_a[i]) }
+    else
+      self.my_each { |i| c = c.method(op).call(i)}
+    end
   end
+  return c
 end
 
 def multiply_els
@@ -82,41 +86,77 @@ public :my_map
 public :my_inject
 public :multiply_els
 
-#------test data-------
-ars = %w[ab cd ef ij kx]
-ari = [10, 20, 30, 40, 50]
+# #------test data-------
+# ars = %w[ab cd ef ij kx]
+# ari = [10, 20, 30, 40, 50]
 
 
 
-puts "----my_map with proc:"
-puts ars.my_map(&:upcase)
-puts "----my_map with block:"
-puts ars.my_map {|s| s.upcase}
+# puts "----my_map with proc:"
+# puts ars.my_map(&:upcase)
+# puts "----my_map with block:"
+# puts ars.my_map {|s| s.upcase}
 
-puts "------------------------"
-puts "----my_inject with hash"
-array = [['A', 'a'], ['B', 'b'], ['C', 'c']]
-hash = array.my_inject({}) do |memo, values|
- memo[values.first] = values.last
- memo
-end
-puts hash
-puts "----my_inject with single proc"
-puts ari.inject(:-)
-puts "----my inject with initial and proc"
-puts ari.inject(5,:+)
-puts "----my_inject with block"
-puts ari.my_inject {|sum, number| sum + number}
-puts "----my_inject with initial value and block"
-puts ari.my_inject (5) {|sum, number| sum + number}
-puts "----------------------------"
-puts "----multipy_els"
-puts ari.multiply_els
-puts "----------------------------"
-puts "----my_count {|e| e > 20}"
-puts ari.my_count {|e| e > 20}
-puts "-----------------------------"
-puts "---- my_none =60"
-puts ari.my_none {|e| e == 60}
-puts "---- my none >60"
-puts ari.my_none {|e| e > 60}
+# puts "------------------------"
+# puts "----my_inject with hash"
+# array = [['A', 'a'], ['B', 'b'], ['C', 'c']]
+# hash = array.my_inject({}) do |memo, values|
+#  memo[values.first] = values.last
+#  memo
+# end
+# puts hash
+
+# puts "----inject with single proc"
+# puts ari.inject(:+)
+# puts "----inject with initial and proc"
+# puts ari.inject(5,:+)
+# puts "----------------------------------"
+# puts "----my_inject with single proc"
+# puts ari.my_inject(:+)
+# puts "----my inject with initial and proc"
+# puts ari.my_inject(5,:+)
+# puts '===================================='
+
+# puts "----inject with single proc"
+# puts ari.inject(:-)
+# puts "----inject with initial and proc"
+# puts ari.inject(5,:-)
+# puts "----------------------------------"
+# puts "----my_inject with single proc"
+# puts ari.my_inject(:-)
+# puts "----my inject with initial and proc"
+# puts ari.my_inject(5,:-)
+# puts '===================================='
+
+# puts "----inject with single proc"
+# puts ari.inject(:*)
+# puts "----inject with initial and proc"
+# puts ari.inject(5,:*)
+# puts "----------------------------------"
+# puts "----my_inject with single proc"
+# puts ari.my_inject(:*)
+# puts "----my inject with initial and proc"
+# puts ari.my_inject(5,:*)
+# puts '===================================='
+
+# puts "----inject with block"
+# puts ari.inject {|sum, number| sum * number}
+# puts "----inject with initial value and block"
+# puts ari.inject (5) {|sum, number| sum * number}
+# puts "=============================="
+# puts "----my_inject with block"
+# puts ari.my_inject {|sum, number| sum * number}
+# puts "----my_inject with initial value and block"
+# puts ari.my_inject (5) {|sum, number| sum * number}
+
+# puts "----------------------------"
+# puts "----multipy_els"
+# puts ari.multiply_els
+# puts "----------------------------"
+# puts "----my_count {|e| e > 20}"
+# puts ari.my_count {|e| e > 20}
+# puts "-----------------------------"
+# puts "---- my_none =60"
+# puts ari.my_none {|e| e == 60}
+# puts "---- my none >60"
+# puts ari.my_none {|e| e > 60}
