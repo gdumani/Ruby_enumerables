@@ -15,7 +15,7 @@ end
 def my_select
   return enum_for(__callee__) unless block_given?
   res=[]
-  self.my_each {|i| res << i if yield(i)}
+  my_each {|i| res << i if yield(i)}
   return res
 end
 
@@ -51,10 +51,25 @@ def my_map
   return res
 end
 
-def my_inject(c=0)
-  return enum_for(__callee__) unless block_given?
-  self.my_each {|i| c=yield(c,i)}
-  return c
+def my_inject(c=nil, op=nil)
+  if op.nil?
+    op=c
+    if op==:+||op==:-
+      c=0
+    else
+      c=1
+    end
+  end
+
+  if block_given?
+    puts "block"
+    self.my_each {|i| c=yield(c,i)}
+    return c
+  else
+    puts "noblock"
+   self.my_each { |i| c = c.method(op).call(i) }
+   return c
+  end
 end
 
 
@@ -76,7 +91,7 @@ public :my_inject
 #end
 
 #puts hash
-#[3, 6, 10, 13].inject(0, :+) => 32
+puts ari.my_inject(:+)
 
 #puts ari.inject(:-)
 
