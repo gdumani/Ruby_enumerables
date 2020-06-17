@@ -1,6 +1,3 @@
-ars = %w[ab cd ef ij kx]
-ari = [10, 20, 30, 40, 50]
-
 def my_each
   return enum_for(__callee__) unless block_given?
   size.times {|i| yield to_a[i]}
@@ -85,29 +82,41 @@ public :my_map
 public :my_inject
 public :multiply_els
 
-puts "op:"
+#------test data-------
+ars = %w[ab cd ef ij kx]
+ari = [10, 20, 30, 40, 50]
+
+
+
+puts "----my_map with proc:"
 puts ars.my_map(&:upcase)
-puts "block:"
+puts "----my_map with block:"
 puts ars.my_map {|s| s.upcase}
-##array = [['A', 'a'], ['B', 'b'], ['C', 'c']]
-##hash = array.my_inject({}) do |memo, values|
-#  memo[values.first] = values.last
-#  memo
-#end
 
-#puts hash
-# puts ari.multiply_els
-
-#puts ari.inject(:-)
-
-
-#puts ari.my_inject {|sum, number| sum + number}
-
-#puts ars.my_map {|s| s.upcase}
-
-# puts ari.my_count {|e| e > 20}
-
-#puts "60"
-#puts ari.my_none {|e| e == 60}
-#puts ">60"
-#puts ari.my_none {|e| e > 60}
+puts "------------------------"
+puts "----my_inject with hash"
+array = [['A', 'a'], ['B', 'b'], ['C', 'c']]
+hash = array.my_inject({}) do |memo, values|
+ memo[values.first] = values.last
+ memo
+end
+puts hash
+puts "----my_inject with single proc"
+puts ari.inject(:-)
+puts "----my inject with initial and proc"
+puts ari.inject(5,:+)
+puts "----my_inject with block"
+puts ari.my_inject {|sum, number| sum + number}
+puts "----my_inject with initial value and block"
+puts ari.my_inject (5) {|sum, number| sum + number}
+puts "----------------------------"
+puts "----multipy_els"
+puts ari.multiply_els
+puts "----------------------------"
+puts "----my_count {|e| e > 20}"
+puts ari.my_count {|e| e > 20}
+puts "-----------------------------"
+puts "---- my_none =60"
+puts ari.my_none {|e| e == 60}
+puts "---- my none >60"
+puts ari.my_none {|e| e > 60}
