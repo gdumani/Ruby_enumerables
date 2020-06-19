@@ -98,7 +98,7 @@ module Enumerable
 
   # rubocop:disable Metrics/PerceivedComplexity
   def my_inject(acumulator = nil, operator = nil)
-    raise LocalJumpError unless block_given? || !operator.empty?
+    raise LocalJumpError unless block_given? || !acumulator.empty?
 
     if block_given?
       if acumulator.nil?
