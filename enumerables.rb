@@ -63,21 +63,21 @@ module Enumerable
 
   def my_none?(cond = nil)
     if !block_given? && cond.nil?
-      my_each { |i| return true unless i }
+      my_each { |i| return false if i }
 
     elsif block_given?
-      my_each { |i| return true unless yield(i) }
+      my_each { |i| return false if yield(i) }
 
     elsif cond.is_a? Class
 
-      my_each { |i| return true unless i.is_a? cond }
+      my_each { |i| return false if i.is_a? cond }
     elsif cond.is_a? Regexp
 
-      my_each { |i| return true unless i.match cond }
+      my_each { |i| return false if i.match cond }
     else
-      my_each { |i| return true unless i == cond }
+      my_each { |i| return false if i == cond }
     end
-    false
+    true
   end
 
   # rubocop:enable Metrics/PerceivedComplexity
@@ -135,6 +135,15 @@ end
 def multiply_els(arr)
   arr.my_inject(3, :*)
 end
+
+p [nil, false, true, []].none?
+p [nil, false, true, []].my_none?
+
+p ['hello'].none?(5)
+p ['hello'].my_none?(5)
+
+p [3,3,3,3].none?(String)
+p [3,3,3,3].my_none?(String)
 
 # puts [1, 2, 3].my_none? {|i| i > 4}
 # puts [1, 2, 3].my_none? {|i| i < 4}
