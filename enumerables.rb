@@ -1,6 +1,4 @@
 module Enumerable
-
-  
   def my_each
     return enum_for(__callee__) unless block_given?
 
@@ -23,55 +21,78 @@ module Enumerable
     res
   end
 
-  def my_all?(cond)
-    if block_given?
+  # rubocop:disable Metrics/PerceivedComplexity
+  # rubocop:disable Metrics/CyclomaticComplexity
+  def my_all?(cond=nil)
+    if !block_given? && cond == nil
+      my_each { |i| return false unless i }
 
-    my_each { |i| return false unless yield(i) }
+
+
+
+    elsif block_given?
+      my_each { |i| return false unless yield(i) }
 
     elsif cond.is_a? Class
 
       my_each { |i| return false unless i.is_a? cond }
     elsif cond.is_a? Regexp
-      
-      my_each { |i| return false unless i.match(cond)}
+
+      my_each { |i| return false unless i.match cond }
     else
-      my_each { |i| return false unless i == cond}
+      my_each { |i| return false unless i == cond }
     end
     true
   end
+
+  # rubocop:enable Metrics/PerceivedComplexity
+  # rubocop:enable Metrics/CyclomaticComplexity
 
   def my_any?(cond)
     if block_given?
 
-    my_each { |i| return true if yield(i) }
-  
+      my_each { |i| return true if yield(i) }
+
     else
-      my_each { |i| return true if i.is_a? cond || i == cond}
+      my_each { |i| return true if (i.is_a? cond) || (i == cond) }
     end
     false
   end
 
-  def my_none?(cond)
-    if block_given?
+  def my_none?(cond=nil)
+    if !block_given? && cond == nil
+      return !my_all?
 
-    my_each { |i| return false if yield(i) }
-  
+    elsif block_given?
+
+      return !my_all?{yield}
+
     else
-      my_each { |i| return false if i.is_a? cond || i == cond}
+      return !my_all?(cond)
     end
-    true
+
   end
 
-  
+#  def my_none?(cond)
+#    if block_given?
+#
+#      my_each { |i| return false if yield(i) }
+#
+#    else
+#      my_each { |i| return false if (i.is_a? cond) || (i == cond) }
+#    end
+#    true
+#  end
+
   def my_count(cond = nil)
     c = 0
     if block_given?
 
       my_each { |i| c += 1 if yield(i) }
-    elsif !cond.nil? 
+    elsif !cond.nil?
       my_each { |i| c += 1 if i == cond }
     else
-    c = self.size
+      c = size
     end
     c
   end
@@ -111,23 +132,29 @@ module Enumerable
 end
 
 
-#Test cases second review
-array = [4, 1, 4, 4, "5", 3]
-block = proc { |num, ind| puts "item #{num} and #{ind}" }
-words = %w[dog door rod blade]
-puts "pass class type"
-p array.all?(Integer)
-p array.my_all?(Integer)
-puts "pass Regex"
-p words.all?(/d/)
-p words.my_all?(/d/)
-puts "pass argument"
-puts "------string"
-p words.all?("dog")
-p words.my_all?("dog")
-puts "--------integer"
-p array.all?(4)
-p array.my_all?(4)
+
+## Test cases second review
+ array = [4, 1, 4, 4, "5", 3]
+ block = proc { |num, ind| puts "item #{num} and #{ind}" }
+ words = %w[dog door rod blade]
+ false_array = [true, false, false, false]
+ puts "pass class type"
+ p array.none?(Integer)
+ p array.my_none?(Integer)
+  puts "------Regex"
+ p words.none?(/d/)
+ p words.my_none?(/d/)
+ puts "------Arguments"
+ puts "------string"
+ p words.none?("dog")
+ p words.my_none?("dog")
+ puts "--------integer"
+ p array.none?(4)
+ p array.my_none?(4)
+ puts "------Boolean Array"
+ puts false_array.none?
+ puts false_array.my_none?
+
 # p array.my_each_with_index  { |num, ind| puts "item #{num} and #{ind}" }
 # puts "-------------------"
 # p array.my_each_with_index(&block)
@@ -143,8 +170,6 @@ p array.my_all?(4)
 # puts %w[ant bear cat].my_all? {|word| word.length >= 3}
 # puts %w[ant bear cat].my_none? {|word| word.length == 5}
 # puts %w[ant bear cat].my_any? {|word| word.length >= 5}
-
-
 
 # #------test data-------
 # ars = %w[ab cd ef ij kx]
