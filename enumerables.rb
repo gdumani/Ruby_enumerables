@@ -27,9 +27,15 @@ module Enumerable
     if block_given?
 
     my_each { |i| return false unless yield(i) }
-  
+
+    elsif cond.is_a? Class
+
+      my_each { |i| return false unless i.is_a? cond }
+    elsif cond.is_a? Regexp
+      
+      my_each { |i| return false unless i.match(cond)}
     else
-      my_each { |i| return false unless i.is_a? cond || i == cond || i =~ cond}
+      my_each { |i| return false unless i == cond}
     end
     true
   end
@@ -62,9 +68,10 @@ module Enumerable
     if block_given?
 
       my_each { |i| c += 1 if yield(i) }
-    else
+    elsif !cond.nil? 
       my_each { |i| c += 1 if i == cond }
-
+    else
+    c = self.size
     end
     c
   end
@@ -108,13 +115,19 @@ end
 array = [4, 1, 4, 4, "5", 3]
 block = proc { |num, ind| puts "item #{num} and #{ind}" }
 words = %w[dog door rod blade]
-
-# p array.all?(Integer)
-# p array.my_all?(Integer)
-
-words.all?(/d/)
-words.my_all?(/d/)
-
+puts "pass class type"
+p array.all?(Integer)
+p array.my_all?(Integer)
+puts "pass Regex"
+p words.all?(/d/)
+p words.my_all?(/d/)
+puts "pass argument"
+puts "------string"
+p words.all?("dog")
+p words.my_all?("dog")
+puts "--------integer"
+p array.all?(4)
+p array.my_all?(4)
 # p array.my_each_with_index  { |num, ind| puts "item #{num} and #{ind}" }
 # puts "-------------------"
 # p array.my_each_with_index(&block)
