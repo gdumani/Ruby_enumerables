@@ -48,13 +48,21 @@ module Enumerable
   # rubocop:enable Metrics/PerceivedComplexity
   # rubocop:enable Metrics/CyclomaticComplexity
 
-  def my_any?(cond)
-    if block_given?
+  def my_any?(cond=nil)
+    if !block_given? && cond == nil
+      my_each { |i| return true if i }
 
+    elsif block_given?
       my_each { |i| return true if yield(i) }
 
+    elsif cond.is_a? Class
+
+      my_each { |i| return true if i.is_a? cond }
+    elsif cond.is_a? Regexp
+
+      my_each { |i| return true if i.match cond }
     else
-      my_each { |i| return true if (i.is_a? cond) || (i == cond) }
+      my_each { |i| return true if i == cond }
     end
     false
   end
@@ -139,21 +147,21 @@ end
  words = %w[dog door rod blade]
  false_array = [true, false, false, false]
  puts "pass class type"
- p array.none?(Integer)
- p array.my_none?(Integer)
+ p array.any?(Integer)
+ p array.my_any?(Integer)
   puts "------Regex"
- p words.none?(/d/)
- p words.my_none?(/d/)
+ p words.any?(/d/)
+ p words.my_any?(/d/)
  puts "------Arguments"
  puts "------string"
- p words.none?("dog")
- p words.my_none?("dog")
+ p words.any?("dog")
+ p words.my_any?("dog")
  puts "--------integer"
- p array.none?(4)
- p array.my_none?(4)
+ p array.any?(4)
+ p array.my_any?(4)
  puts "------Boolean Array"
- puts false_array.none?
- puts false_array.my_none?
+ puts false_array.any?
+ puts false_array.my_any?
 
 # p array.my_each_with_index  { |num, ind| puts "item #{num} and #{ind}" }
 # puts "-------------------"
