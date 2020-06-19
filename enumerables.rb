@@ -69,14 +69,14 @@ module Enumerable
 
   def my_none?(cond=nil)
     if !block_given? && cond == nil
-      return !my_all?
+      return !my_any?
 
     elsif block_given?
 
-      return !my_all?{yield}
+      return !my_any?{yield}
 
     else
-      return !my_all?(cond)
+      return !my_any?(cond)
     end
 
   end
@@ -147,21 +147,21 @@ end
  words = %w[dog door rod blade]
  false_array = [true, false, false, false]
  puts "pass class type"
- p array.any?(Integer)
- p array.my_any?(Integer)
+ p array.none?(Integer)
+ p array.my_none?(Integer)
   puts "------Regex"
- p words.any?(/d/)
- p words.my_any?(/d/)
+ p words.none?(/d/)
+ p words.my_none?(/d/)
  puts "------Arguments"
  puts "------string"
- p words.any?("dog")
- p words.my_any?("dog")
+ p words.none?("dog")
+ p words.my_none?("dog")
  puts "--------integer"
- p array.any?(4)
- p array.my_any?(4)
+ p array.none?(4)
+ p array.my_none?(4)
  puts "------Boolean Array"
- puts false_array.any?
- puts false_array.my_any?
+ puts false_array.none?
+ puts false_array.my_none?
 
 # p array.my_each_with_index  { |num, ind| puts "item #{num} and #{ind}" }
 # puts "-------------------"
