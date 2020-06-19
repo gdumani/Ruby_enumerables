@@ -98,7 +98,7 @@ module Enumerable
 
   # rubocop:disable Metrics/PerceivedComplexity
   def my_inject(acumulator = nil, operator = nil)
-    raise LocalJumpError unless block_given? || !acumulator.empty?
+    raise LocalJumpError if !block_given? && acumulator.nil?
 
     if block_given?
       if acumulator.nil?
@@ -136,14 +136,17 @@ def multiply_els(arr)
   arr.my_inject(3, :*)
 end
 
-p [nil, false, true, []].none?
-p [nil, false, true, []].my_none?
+# p [nil, false, true, []].none?
+# p [nil, false, true, []].my_none?
 
-p ['hello'].none?(5)
-p ['hello'].my_none?(5)
+# p ['hello'].none?(5)
+# p ['hello'].my_none?(5)
 
-p [3,3,3,3].none?(String)
-p [3,3,3,3].my_none?(String)
+# p [3, 3, 3, 3].none?(String)
+# p [3, 3, 3, 3].my_none?(String)
+
+# p (5..10).inject(2, :*)
+# p (5..10).my_inject(2, :*)
 
 # puts [1, 2, 3].my_none? {|i| i > 4}
 # puts [1, 2, 3].my_none? {|i| i < 4}
