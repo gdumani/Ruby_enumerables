@@ -61,32 +61,27 @@ module Enumerable
     false
   end
 
-  # rubocop:enable Metrics/PerceivedComplexity
-  # rubocop:enable Metrics/CyclomaticComplexity
-
   def my_none?(cond = nil)
     if !block_given? && cond.nil?
-      !my_any?
+      my_each { |i| return true unless i }
 
     elsif block_given?
+      my_each { |i| return true unless yield(i) }
 
-      !my_any? { yield }
+    elsif cond.is_a? Class
 
+      my_each { |i| return true unless i.is_a? cond }
+    elsif cond.is_a? Regexp
+
+      my_each { |i| return true unless i.match cond }
     else
-      !my_any?(cond)
+      my_each { |i| return true unless i == cond }
     end
+    false
   end
 
-  #  def my_none?(cond)
-  #    if block_given?
-  #
-  #      my_each { |i| return false if yield(i) }
-  #
-  #    else
-  #      my_each { |i| return false if (i.is_a? cond) || (i == cond) }
-  #    end
-  #    true
-  #  end
+  # rubocop:enable Metrics/PerceivedComplexity
+  # rubocop:enable Metrics/CyclomaticComplexity
 
   def my_count(cond = nil)
     c = 0
@@ -101,7 +96,10 @@ module Enumerable
     c
   end
 
+  # rubocop:disable Metrics/PerceivedComplexity
   def my_inject(acumulator = nil, operator = nil)
+    raise LocalJumpError unless block_given? || !operator.empty?
+
     if block_given?
       if acumulator.nil?
         acumulator = to_a[0]
@@ -119,16 +117,13 @@ module Enumerable
     end
     acumulator
   end
-
-  def multiply_els
-    my_inject(:*)
-  end
+  # rubocop:enable Metrics/PerceivedComplexity
 
   def my_map(oper = nil)
     res = []
     return enum_for(__callee__) if !block_given? && oper.nil?
 
-    if block_given?
+    if block_given? and !oper
       my_each { |i| res << yield(i) }
     else
       my_each { |i| res << oper.call(i) }
@@ -136,6 +131,16 @@ module Enumerable
     res
   end
 end
+
+def multiply_els(arr)
+  arr.my_inject(3, :*)
+end
+
+# puts [1, 2, 3].my_none? {|i| i > 4}
+# puts [1, 2, 3].my_none? {|i| i < 4}
+# puts (1...3).my_none? {|i| i < 4}
+# my_proc = Proc.new { |num| num > 10 }
+# p [11, 2, 3, 15].my_map(my_proc) {|num| num < 10 } # should return [true, false, false, true]
 
 ## Test cases second review
 # array = [4, 1, 4, 4, 5, 3]

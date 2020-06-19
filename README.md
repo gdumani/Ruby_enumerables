@@ -45,8 +45,9 @@ Note: You need to do `bundle install` before executing the commands above.
 - Twitter: [@AdfPizarro](https://twitter.com/adfpizarro)
 - Linkedin: [adrian-flores-pizarro-73b62316a](https://www.linkedin.com/in/adrian-flores-pizarro-73b62316a/)
 ​
-👤 **Author2**
-Giancarlo Dumani
+
+👤 **Giancarlo Dumani**
+
 
 - Github: [@githubhandle](https://github.com/gdumani)
 - Twitter: [@twitterhandle](https://twitter.com/gdumani1)
