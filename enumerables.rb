@@ -1,14 +1,18 @@
 module Enumerable
+
+  
   def my_each
     return enum_for(__callee__) unless block_given?
 
     size.times { |i| yield to_a[i] }
+    self
   end
 
   def my_each_with_index
     return enum_for(__callee__) unless block_given?
 
     size.times { |i| yield(to_a[i], i) }
+    self
   end
 
   def my_select
@@ -19,27 +23,40 @@ module Enumerable
     res
   end
 
-  def my_all?
-    return enum_for(__callee__) unless block_given?
+  def my_all?(cond)
+    if block_given?
 
     my_each { |i| return false unless yield(i) }
+  
+    else
+      my_each { |i| return false unless i.is_a? cond || i == cond || i =~ cond}
+    end
     true
   end
 
-  def my_any?
-    return enum_for(__callee__) unless block_given?
+  def my_any?(cond)
+    if block_given?
 
     my_each { |i| return true if yield(i) }
+  
+    else
+      my_each { |i| return true if i.is_a? cond || i == cond}
+    end
     false
   end
 
-  def my_none?
-    return enum_for(__callee__) unless block_given?
+  def my_none?(cond)
+    if block_given?
 
     my_each { |i| return false if yield(i) }
+  
+    else
+      my_each { |i| return false if i.is_a? cond || i == cond}
+    end
     true
   end
 
+  
   def my_count(cond = nil)
     c = 0
     if block_given?
@@ -86,6 +103,26 @@ module Enumerable
   end
 end
 
+
+#Test cases second review
+array = [4, 1, 4, 4, "5", 3]
+block = proc { |num, ind| puts "item #{num} and #{ind}" }
+words = %w[dog door rod blade]
+
+# p array.all?(Integer)
+# p array.my_all?(Integer)
+
+words.all?(/d/)
+words.my_all?(/d/)
+
+# p array.my_each_with_index  { |num, ind| puts "item #{num} and #{ind}" }
+# puts "-------------------"
+# p array.my_each_with_index(&block)
+# puts "==================="
+# p array.each_with_index  { |num, ind| puts "item #{num} and #{ind}" }
+# puts "-------------------"
+# p array.each_with_index(&block)
+
 # Test cases to review
 # puts (5..10).my_inject {|sum, n| sum + n}
 # puts [1,2,4,2].my_count(2)
@@ -93,6 +130,8 @@ end
 # puts %w[ant bear cat].my_all? {|word| word.length >= 3}
 # puts %w[ant bear cat].my_none? {|word| word.length == 5}
 # puts %w[ant bear cat].my_any? {|word| word.length >= 5}
+
+
 
 # #------test data-------
 # ars = %w[ab cd ef ij kx]
