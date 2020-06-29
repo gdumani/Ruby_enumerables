@@ -3,12 +3,14 @@ module Enumerable
     return enum_for(__callee__) unless block_given?
 
     size.times { |i| yield to_a[i] }
+    self
   end
 
   def my_each_with_index
     return enum_for(__callee__) unless block_given?
 
     size.times { |i| yield(to_a[i], i) }
+    self
   end
 
   def my_select
@@ -19,50 +21,85 @@ module Enumerable
     res
   end
 
-  def my_all?
-    return enum_for(__callee__) unless block_given?
+  # rubocop:disable Metrics/PerceivedComplexity
+  # rubocop:disable Metrics/CyclomaticComplexity
+  def my_all?(cond = nil)
+    if !block_given? && cond.nil?
+      my_each { |i| return false unless i }
 
-    my_each { |i| return false unless yield(i) }
+    elsif block_given?
+      my_each { |i| return false unless yield(i) }
+
+    elsif cond.is_a? Class
+
+      my_each { |i| return false unless i.is_a? cond }
+    elsif cond.is_a? Regexp
+
+      my_each { |i| return false unless i.match cond }
+    else
+      my_each { |i| return false unless i == cond }
+    end
     true
   end
 
-  def my_any?
-    return enum_for(__callee__) unless block_given?
+  def my_any?(cond = nil)
+    if !block_given? && cond.nil?
+      my_each { |i| return true if i }
 
-    my_each { |i| return true if yield(i) }
+    elsif block_given?
+      my_each { |i| return true if yield(i) }
+
+    elsif cond.is_a? Class
+
+      my_each { |i| return true if i.is_a? cond }
+    elsif cond.is_a? Regexp
+
+      my_each { |i| return true if i.match cond }
+    else
+      my_each { |i| return true if i == cond }
+    end
     false
   end
 
-  def my_none?
-    return enum_for(__callee__) unless block_given?
+  def my_none?(cond = nil)
+    if !block_given? && cond.nil?
+      my_each { |i| return false if i }
 
-    my_each { |i| return false if yield(i) }
+    elsif block_given?
+      my_each { |i| return false if yield(i) }
+
+    elsif cond.is_a? Class
+
+      my_each { |i| return false if i.is_a? cond }
+    elsif cond.is_a? Regexp
+
+      my_each { |i| return false if i.match cond }
+    else
+      my_each { |i| return false if i == cond }
+    end
     true
   end
+
+  # rubocop:enable Metrics/PerceivedComplexity
+  # rubocop:enable Metrics/CyclomaticComplexity
 
   def my_count(cond = nil)
     c = 0
     if block_given?
 
       my_each { |i| c += 1 if yield(i) }
-    else
+    elsif !cond.nil?
       my_each { |i| c += 1 if i == cond }
-
+    else
+      c = size
     end
     c
   end
 
-  def my_map(&oper)
-    res = []
-    if block_given?
-      my_each { |i| res << yield(i) }
-    else
-      my_each { |i| res << oper.call(i) }
-    end
-    res
-  end
-
+  # rubocop:disable Metrics/PerceivedComplexity
   def my_inject(acumulator = nil, operator = nil)
+    raise LocalJumpError if !block_given? && acumulator.nil?
+
     if block_given?
       if acumulator.nil?
         acumulator = to_a[0]
@@ -80,11 +117,81 @@ module Enumerable
     end
     acumulator
   end
+  # rubocop:enable Metrics/PerceivedComplexity
 
-  def multiply_els
-    my_inject(:*)
+  def my_map(oper = nil)
+    res = []
+    return enum_for(__callee__) if !block_given? && oper.nil?
+
+    if block_given? and !oper
+      my_each { |i| res << yield(i) }
+    else
+      my_each { |i| res << oper.call(i) }
+    end
+    res
   end
 end
+
+def multiply_els(arr)
+  arr.my_inject(3, :*)
+end
+
+# p [nil, false, true, []].none?
+# p [nil, false, true, []].my_none?
+
+# p ['hello'].none?(5)
+# p ['hello'].my_none?(5)
+
+# p [3, 3, 3, 3].none?(String)
+# p [3, 3, 3, 3].my_none?(String)
+
+# p (5..10).inject(2, :*)
+# p (5..10).my_inject(2, :*)
+
+# puts [1, 2, 3].my_none? {|i| i > 4}
+# puts [1, 2, 3].my_none? {|i| i < 4}
+# puts (1...3).my_none? {|i| i < 4}
+# my_proc = Proc.new { |num| num > 10 }
+# p [11, 2, 3, 15].my_map(my_proc) {|num| num < 10 } # should return [true, false, false, true]
+
+## Test cases second review
+# array = [4, 1, 4, 4, 5, 3]
+# block = proc { |num, ind| puts "item #{num} and #{ind}" }
+# words = %w[dog door rod blade]
+# false_array = [true, false, false, false]
+
+# my_proc = proc {|num| num > 2 }
+
+#  p array.my_map(my_proc) {|num| num < 10 }
+#  p array.map(my_proc) {|num| num < 10 }
+
+# p array.map
+# p array.my_map
+
+# puts "pass class type"
+# p array.none?(Integer)
+# p array.my_none?(Integer)
+#  puts "------Regex"
+# p words.none?(/d/)
+# p words.my_none?(/d/)
+# puts "------Arguments"
+# puts "------string"
+# p words.none?("dog")
+# p words.my_none?("dog")
+# puts "--------integer"
+# p array.none?(4)
+# p array.my_none?(4)
+# puts "------Boolean Array"
+# puts false_array.none?
+# puts false_array.my_none?
+
+# p array.my_each_with_index  { |num, ind| puts "item #{num} and #{ind}" }
+# puts "-------------------"
+# p array.my_each_with_index(&block)
+# puts "==================="
+# p array.each_with_index  { |num, ind| puts "item #{num} and #{ind}" }
+# puts "-------------------"
+# p array.each_with_index(&block)
 
 # Test cases to review
 # puts (5..10).my_inject {|sum, n| sum + n}
